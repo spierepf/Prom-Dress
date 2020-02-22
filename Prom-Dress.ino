@@ -4,22 +4,13 @@
 // Our Global Sample Rate, 5000hz
 #define SAMPLEPERIODUS 200
 
-// defines for setting and clearing register bits
-#ifndef cbi
-#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
-#endif
-#ifndef sbi
-#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
-#endif
+#define LED_PIN LED_BUILTIN
+#define AUDIO_INPUT_PIN  36
+#define THRESHOLD_INPUT_PIN 39
 
 void setup() {
-    // Set ADC to 77khz, max for 10bit
-    sbi(ADCSRA,ADPS2);
-    cbi(ADCSRA,ADPS1);
-    cbi(ADCSRA,ADPS0);
-
     //The pin with the LED
-    pinMode(2, OUTPUT);
+    pinMode(LED_PIN, OUTPUT);
 }
 
 // 20 - 200hz Single Pole Bandpass IIR Filter
@@ -61,7 +52,7 @@ void loop() {
 
     for(i = 0;;++i){
         // Read ADC and center so +-512
-        sample = (float)analogRead(0)-503.f;
+        sample = (float)analogRead(AUDIO_INPUT_PIN)-503.f;
 
         // Filter only bass component
         value = bassFilter(sample);
@@ -76,11 +67,11 @@ void loop() {
                 beat = beatFilter(envelope);
 
                 // Threshold it based on potentiometer on AN1
-                thresh = 0.02f * (float)analogRead(1);
+                thresh = 0.02f * (float)analogRead(THRESHOLD_INPUT_PIN);
 
                 // If we are above threshold, light up LED
-                if(beat > thresh) digitalWrite(2, HIGH);
-                else digitalWrite(2, LOW);
+                if(beat > thresh) digitalWrite(LED_PIN, HIGH);
+                else digitalWrite(LED_PIN, LOW);
 
                 //Reset sample counter
                 i = 0;
