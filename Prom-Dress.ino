@@ -8,12 +8,25 @@
 #define AUDIO_INPUT_PIN  27
 #define THRESHOLD_INPUT_PIN 14
 
+void TaskAudioInput( void *pvParameters );
+
 void setup() {
     //The pin with the LED
     pinMode(LED_PIN, OUTPUT);
 
   // initialize serial communication at 115200 bits per second:
   Serial.begin(115200);
+  
+  xTaskCreatePinnedToCore(
+    TaskAudioInput
+    ,  "TaskAudioInput"   // A name just for humans
+    ,  1024  // This stack size can be checked & adjusted by reading the Stack Highwater
+    ,  NULL
+    ,  2  // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
+    ,  NULL 
+    ,  1);
+
+  // Now the task scheduler, which takes over control of scheduling individual tasks, is automatically started.
 }
 
 // 20 - 200hz Single Pole Bandpass IIR Filter
@@ -49,6 +62,19 @@ float beatFilter(float sample) {
 }
 
 void loop() {
+  // Empty. Things are done in Tasks.
+}
+
+/*--------------------------------------------------*/
+/*---------------------- Tasks ---------------------*/
+/*--------------------------------------------------*/
+
+void TaskAudioInput(void *pvParameters)  // This is a task.
+{
+  (void) pvParameters;
+
+  for (;;) // A Task shall never return or exit.
+  {
     unsigned long time = micros(); // Used to track rate
     float sample, value, envelope, beat, thresh;
     unsigned char i;
@@ -86,4 +112,5 @@ void loop() {
         // Consume excess clock cycles, to keep at 5000 hz
         for(unsigned long up = time+SAMPLEPERIODUS; time > 20 && time < up; time = micros());
     }  
+  }
 }
