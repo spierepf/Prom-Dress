@@ -11,6 +11,9 @@
 void setup() {
     //The pin with the LED
     pinMode(LED_PIN, OUTPUT);
+
+  // initialize serial communication at 115200 bits per second:
+  Serial.begin(115200);
 }
 
 // 20 - 200hz Single Pole Bandpass IIR Filter
@@ -65,9 +68,12 @@ void loop() {
         if(i == 200) {
                 // Filter out repeating bass sounds 100 - 180bpm
                 beat = beatFilter(envelope);
+                Serial.print(beat);
+                Serial.print(" ");
 
                 // Threshold it based on potentiometer on AN1
                 thresh = 0.02f * (float)analogRead(THRESHOLD_INPUT_PIN);
+                Serial.println(thresh);
 
                 // If we are above threshold, light up LED
                 if(beat > thresh) digitalWrite(LED_PIN, HIGH);
