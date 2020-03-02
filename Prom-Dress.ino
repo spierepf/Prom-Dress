@@ -4,9 +4,9 @@
 // Our Global Sample Rate, 5000hz
 #define SAMPLEPERIODUS 200
 
-#define LED_PIN LED_BUILTIN
-#define AUDIO_INPUT_PIN  36
-#define THRESHOLD_INPUT_PIN 39
+#define LED_PIN 15
+#define AUDIO_INPUT_PIN  27
+#define THRESHOLD_INPUT_PIN 14
 
 void setup() {
     //The pin with the LED
